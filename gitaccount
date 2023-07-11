@@ -1,0 +1,38 @@
+#!/bin/bash
+
+echo "Currently signed in with \`$(git config --get user.name) ($(git config --get user.email))\`" | gum format
+
+GITACCOUNT_GLOBAL="false"
+
+if [ ! $(git rev-parse --is-inside-work-tree 2> /dev/null) ]; then
+  GITACCOUNT_GLOBAL="true"
+  gum confirm "Not in a git repository, update global config?" || exit 0
+fi
+
+GITACCOUNT_SELECTED=$(gum table < ~/.config/gitaccounts.csv -w 12,24,48)
+
+if [ -z "$GITACCOUNT_SELECTED" ]; then
+  echo "Account unchanged \`operation cancelled\`" | gum format
+  exit 0
+fi
+
+GITACCOUNT_NAME=$(echo $GITACCOUNT_SELECTED | cut -d ',' -f 1)
+GITACCOUNT_EMAIL=$(echo $GITACCOUNT_SELECTED | cut -d ',' -f 2)
+GITACCOUNT_KEY=$(echo $GITACCOUNT_SELECTED | cut -d ',' -f 3)
+
+if [ $GITACCOUNT_GLOBAL = "true" ]; then
+  git config --global user.name "$GITACCOUNT_NAME"
+  git config --global user.email "$GITACCOUNT_EMAIL"
+  if [ ! -z $GITACCOUNT_KEY ]; then
+    git config --global user.signingkey "$GITACCOUNT_KEY"
+  fi
+  echo "Setting user in the \`global\` scope to \`$GITACCOUNT_NAME ($GITACCOUNT_EMAIL)\`" | gum format
+else
+  git config user.name "$GITACCOUNT_NAME"
+  git config user.email "$GITACCOUNT_EMAIL"
+  if [ ! -z $GITACCOUNT_KEY ]; then
+    git config user.signingkey "$GITACCOUNT_KEY"
+  fi
+  echo "Setting user in the \`local\` scope to \`$GITACCOUNT_NAME ($GITACCOUNT_EMAIL)\`" | gum format
+fi
+
