@@ -1,2 +1,8 @@
 files() { nohup nautilus -w ${1-.} > /dev/null 2>&1 & disown }
+dns() { curl --http2 -sH "accept: application/dns-json" "https://1.1.1.1/dns-query?name=$1" | jq }
+cfwhois() { curl --http2 -s "https://cfwho.com/api/v1/$1" | jq }
+ffp() { ffprobe -v quiet -print_format json -show_format -show_streams -show_chapters $1 | jq }
+alias lg="lazygit"
+alias ls="ls --color"
+alias sizeof="du -hd 0"
 
