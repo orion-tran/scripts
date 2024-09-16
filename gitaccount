@@ -9,7 +9,7 @@ if [ ! $(git rev-parse --is-inside-work-tree 2> /dev/null) ]; then
   gum confirm "Not in a git repository, update global config?" || exit 0
 fi
 
-GITACCOUNT_SELECTED=$(gum table < ~/.config/gitaccounts.csv -w 12,24,48)
+GITACCOUNT_SELECTED=$(gum table < ~/.config/gitaccounts.csv -w 12,24,48 --height 12)
 
 if [ -z "$GITACCOUNT_SELECTED" ]; then
   echo "Account unchanged \`operation cancelled\`" | gum format
